@@ -1,33 +1,40 @@
 import { galleryItems } from "./gallery-items.js";
 
-const galleryContainer = document.querySelector(".gallery");
+const gallery = document.querySelector(".gallery");
 
-galleryItems.forEach((item) => {
-  const li = document.createElement("li");
-  li.classList.add("gallery__item");
+for (const item of galleryItems) {
+  gallery.insertAdjacentHTML(
+    "beforeend",
+    `<li class="gallery__item">
+      <a class="gallery__link" href="${item.original}">
+        <img
+          class="gallery__image"
+          src="${item.preview}"
+          data-source="${item.original}"
+          alt="${item.description}"
+        />
+      </a>
+    </li>`
+  );
+}
 
-  const link = document.createElement("a");
-  link.classList.add("gallery__link");
-  link.href = item.original;
-
-  const img = document.createElement("img");
-  img.classList.add("gallery__image");
-  img.src = item.preview;
-  img.setAttribute("data-source", item.original);
-  img.alt = item.description;
-
-  link.appendChild(img);
-  li.appendChild(link);
-  galleryContainer.appendChild(li);
-});
-
-galleryContainer.addEventListener("click", (event) => {
+const clickImage = (event) => {
   event.preventDefault();
-  if (event.target.tagName === "IMG") {
-    const instance = basicLightbox.create(`
-      <img src="${event.target.dataset.source}" alt="${event.target.alt}" />
-    `);
-    instance.show();
-  }
-});
+  const imgOriginal = event.target.dataset.source;
+  const instance = basicLightbox.create(
+    `<img src="${imgOriginal}" width="800" height="600">`
+  );
+  instance.show();
+
+  const closeImage = (event) => {
+    if (event.key === "Escape") {
+      instance.close();
+    }
+  };
+  document.addEventListener("keydown", closeImage);
+};
+
+gallery.addEventListener("click", clickImage);
+
 console.log(galleryItems);
+console.log(gallery);
